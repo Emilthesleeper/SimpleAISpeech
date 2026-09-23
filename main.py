@@ -1,20 +1,39 @@
 import ipaddress
 import json
+import os
 import queue
 import re
+import sys
 import threading
 import time
 import tkinter as tk
 from html.parser import HTMLParser
+from pathlib import Path
 from tkinter import ttk, scrolledtext, messagebox
 from urllib.parse import parse_qs, urlencode, urlparse
 from urllib.request import Request, urlopen
+
+if getattr(sys, "frozen", False):
+    local_app_data = Path(
+        os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local")
+    )
+    whisper_cache = local_app_data / "SimpleAISpeech" / "whisper-cache"
+    os.environ["HF_HOME"] = str(whisper_cache)
+    os.environ["HF_HUB_CACHE"] = str(whisper_cache / "hub")
 
 import numpy as np
 import sounddevice as sd
 from faster_whisper import WhisperModel
 from ollama import Client
 from piper import PiperVoice
+
+
+def resource_path(relative_path):
+    base_directory = Path(
+        getattr(sys, "_MEIPASS", Path(__file__).resolve().parent)
+    )
+    return str(base_directory / relative_path)
+
 
 SAMPLE_RATE = 16000
 BLOCK_SIZE = 512
@@ -23,7 +42,7 @@ OLLAMA_MODEL = "llama3.2:3b"
 WHISPER_MODEL = "base"
 WHISPER_DEVICE = "cpu"
 WHISPER_COMPUTE_TYPE = "int8"
-PIPER_MODEL = r"models\de_DE-thorsten-high.onnx"
+PIPER_MODEL = resource_path("models/de_DE-thorsten-high.onnx")
 ENERGY_THRESHOLD = 0.018
 MIN_SPEECH_MS = 250
 END_SILENCE_MS = 650
@@ -940,7 +959,52 @@ class VoiceApp:
         self.root.destroy()
 
 
+def prepare_whisper_model():
+    window = tk.Tk()
+    window.title("SimpleAISpeech – Modellinstallation")
+    window.geometry("440x120")
+    window.resizable(False, False)
+    window.protocol("WM_DELETE_WINDOW", lambda: None)
+    ttk.Label(
+        window,
+        text="Das Whisper-Modell wird heruntergeladen.\n"
+        "Bitte lassen Sie dieses Fenster geöffnet.",
+        padding=12,
+    ).pack(fill="x")
+    progress = ttk.Progressbar(window, mode="indeterminate", length=400)
+    progress.pack(padx=16, pady=(0, 12))
+    progress.start(12)
+    error = []
+
+    def load_model():
+        try:
+            WhisperModel(
+                WHISPER_MODEL,
+                device=WHISPER_DEVICE,
+                compute_type=WHISPER_COMPUTE_TYPE,
+            )
+        except Exception as exc:
+            error.append(f"{type(exc).__name__}: {exc}")
+        window.after(0, finish)
+
+    def finish():
+        progress.stop()
+        if error:
+            messagebox.showerror(
+                "Modellinstallation fehlgeschlagen",
+                "Das Whisper-Modell konnte nicht geladen werden:\n\n" + error[0],
+                parent=window,
+            )
+        window.destroy()
+
+    threading.Thread(target=load_model, daemon=True).start()
+    window.mainloop()
+    return 1 if error else 0
+
+
 if __name__ == "__main__":
+    if "--prepare-whisper-model" in sys.argv:
+        raise SystemExit(prepare_whisper_model())
     root = tk.Tk()
     VoiceApp(root)
     root.mainloop()

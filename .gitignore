@@ -1,1 +1,7 @@
 /models
+/.venv-build/
+/build/
+/dist/
+/dist-release/
+/dist-installer/
+__pycache__/
