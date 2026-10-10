@@ -5,6 +5,7 @@ $buildVenv = Join-Path $projectRoot ".venv-build"
 $buildPython = Join-Path $buildVenv "Scripts\python.exe"
 $highModel = Join-Path $projectRoot "models\de_DE-thorsten-high.onnx"
 $highModelConfig = Join-Path $projectRoot "models\de_DE-thorsten-high.onnx.json"
+$webDirectory = Join-Path $projectRoot "web"
 $outputDirectory = Join-Path $projectRoot "dist-release"
 $workDirectory = Join-Path $projectRoot "build\pyinstaller-onefile"
 $specDirectory = Join-Path $projectRoot "build\spec-onefile"
@@ -68,12 +69,12 @@ $arguments = @(
     "--collect-all", "piper",
     "--collect-all", "piper_phonemize",
     "--collect-all", "onnxruntime",
-    "--collect-all", "sounddevice",
     "--collect-all", "ollama",
     "--copy-metadata", "faster-whisper",
     "--copy-metadata", "piper-tts",
     "--add-data", "$highModel;models",
     "--add-data", "$highModelConfig;models",
+    "--add-data", "$webDirectory;web",
     (Join-Path $projectRoot "main.py")
 )
 

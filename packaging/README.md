@@ -10,14 +10,15 @@ The setup then:
 1. Runs the official Ollama Windows installer command if Ollama is not already
    installed.
 2. Starts Ollama if needed and runs `ollama pull llama3.2:3b`.
-3. Downloads the `faster-whisper` base model into
+3. Downloads the `faster-whisper` small model into
    `%LOCALAPPDATA%\SimpleAISpeech\whisper-cache`.
 4. Includes the Piper Thorsten high model in the application payload.
 
 Ollama itself and its model files use Ollama's standard per-user install and
 model locations. The Whisper cache lives in the current user's Local AppData;
-the Piper voice lives with the application. Installation requires an internet
-connection.
+the Piper voice lives with the application. The `small` Whisper model is
+larger and slower than `base`, but improves transcription accuracy.
+Installation requires an internet connection.
 
 Before distributing the installer, confirm that the licenses and attribution
 requirements for the Piper voice, Ollama model, and bundled Python dependencies
