@@ -6,3 +6,5 @@
 /dist-installer/
 __pycache__/
 .vscode
+run_commands.bat
+validate.bat

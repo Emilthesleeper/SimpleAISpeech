@@ -6,13 +6,19 @@ reads them aloud with Piper.
 
 ## Features
 
-- Modern browser-based voice studio with live transcription and read-along
-  captions.
+- Simplified, voice-first browser studio with German and English interface,
+  live transcription, concise responses, and read-along captions. No text-chat
+  input is shown.
+- Voice-first interface without text-chat input; standard answers are kept
+  concise unless more detail is requested.
 - Browser microphone streaming, a tactile mute control, and voice interruption
   during response generation and playback.
 - Animated page-edge colors show speech detection, recognition, AI processing,
   speech playback, interruption, and combined search/speech activity.
 - Live web-search progress and results are shown alongside the conversation.
+- Per-language Piper voice status checks for the highest available `high`
+  quality tier. The English Lessac High voice can be downloaded from the
+  settings panel; the German Thorsten High voice is included with the app.
 - Voice interruption during response generation and playback.
 - Optional web research through DuckDuckGo, with Bing RSS as a fallback when
   DuckDuckGo is blocked or returns no usable results; no search API key is
@@ -38,6 +44,8 @@ Piper Thorsten High voice files. It also:
 2. Starts Ollama if needed and downloads `llama3.2:3b`.
 3. Downloads the faster-whisper `small` model into
    `%LOCALAPPDATA%\SimpleAISpeech\whisper-cache`.
+4. Includes the German Piper Thorsten High voice; the English Lessac High voice
+   can be downloaded from the app's voice-quality panel.
 
 The target PC does **not** need Python or pip. Installation requires an
 internet connection. The `small` Whisper model is larger and slower than
@@ -88,17 +96,27 @@ Python and pip are used only on the build PC. See
 
 For development, install the packages listed in
 [`packaging/requirements-build.txt`](packaging/requirements-build.txt), make
-sure Ollama is running with `llama3.2:3b` available, and ensure the Piper voice
-files above are present. Then run:
+sure Ollama is running with at least one model installed, and ensure the Piper
+voice files above are present. The app defaults to `llama3.2:3b` when available;
+choose another installed model in the web interface. Then run:
 
 ```powershell
 python main.py
 ```
 
-The app opens its local web interface at `http://127.0.0.1:8765`. Allow
-microphone access in the browser and click the microphone button to start.
-Audio is streamed from the browser to the local app; the interface is in
-German.
+The app opens its local web interface at `http://127.0.0.1:8765`. Choose
+Deutsch or English in the language selector. The matching highest-quality
+Piper voice must be installed; use **Download** in the voice-quality panel if
+it is missing. Allow microphone access in the browser and click the microphone
+button to start. Audio is streamed from the browser to the local app. Dark mode
+is enabled by default; use the header toggle to switch themes. Your theme choice
+is saved in the browser.
+The Ollama model panel shows installed model sizes and an estimated VRAM fit.
+Available VRAM is calculated after subtracting VRAM attributed to models
+currently loaded by Ollama from NVIDIA-reported usage. Unloaded model VRAM is
+estimated from its on-disk size, so context length, runtime overhead, and
+multi-GPU placement can change whether it actually fits. If NVIDIA VRAM data is
+unavailable, the fit is shown as unknown.
 
 ## Notes
 
