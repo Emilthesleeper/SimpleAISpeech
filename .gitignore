@@ -5,3 +5,4 @@
 /dist-release/
 /dist-installer/
 __pycache__/
+.vscode

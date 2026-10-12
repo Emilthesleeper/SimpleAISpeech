@@ -1,0 +1,4 @@
+faster-whisper
+ollama
+piper-tts
+numpy
